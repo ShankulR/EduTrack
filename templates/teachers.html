@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Teachers | Educanize{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Teachers</h1><p>Manage teaching staff records.</p></div><a class="btn btn-primary" href="{{ url_for('teacher_add') }}"><i class="bi bi-plus-lg"></i> Add Teacher</a></div>
+<section class="panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Phone</th><th>Action</th></tr></thead><tbody>
+{% for r in rows %}<tr><td><b>{{ r.name }}</b></td><td>{{ r.email }}</td><td>{{ r.department }}</td><td>{{ r.phone or '—' }}</td><td><form method="post" action="{{ url_for('teacher_delete',tid=r.id) }}" onsubmit="return confirm('Delete this teacher?')"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form></td></tr>{% else %}<tr><td colspan="5" class="empty">No teachers added yet.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

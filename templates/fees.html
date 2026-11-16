@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Fees & Payments | Educanize{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Fees & Payments</h1><p>Record student fee payments and review collections.</p></div><span class="term-pill">Total collected: ₹{{ "{:,.2f}".format(total) }}</span></div>
+<section class="panel form-panel mb-4"><h3 class="section-title">Record a Payment</h3>
+{% if students %}<form method="post"><div class="form-grid">
+<div><label class="form-label">Student</label><select class="form-select" name="student_id" required><option value="">Select student</option>{% for s in students %}<option value="{{ s.id }}">{{ s.name }} ({{ s.roll_no }})</option>{% endfor %}</select></div>
+<div><label class="form-label">Amount (₹)</label><input class="form-control" type="number" name="amount" min="0.01" step="0.01" required></div>
+<div><label class="form-label">Payment date</label><input class="form-control" type="date" name="payment_date" value="{{ today }}" required></div>
+<div><label class="form-label">Description</label><input class="form-control" name="description" placeholder="e.g. Semester fee"></div>
+</div><div class="form-actions"><button class="btn btn-primary">Save Payment</button></div></form>{% else %}<p class="empty">Add a student before recording a payment.</p>{% endif %}
+</section>
+<section class="panel"><h3 class="section-title">Payment History</h3><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Date</th><th>Student</th><th>Roll No.</th><th>Description</th><th>Amount</th></tr></thead><tbody>
+{% for p in payments %}<tr><td>{{ p.payment_date }}</td><td><b>{{ p.name }}</b></td><td>{{ p.roll_no }}</td><td>{{ p.description or '—' }}</td><td>₹{{ "{:,.2f}".format(p.amount) }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No payments recorded yet.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

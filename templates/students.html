@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Students | EduTrack{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Students</h1><p>View and manage student records.</p></div><a class="btn btn-primary" href="{{ url_for('student_add') }}"><i class="bi bi-plus-lg"></i> Add Student</a></div>
+<section class="panel">
+<form class="toolbar" method="get"><input class="form-control" name="q" value="{{ q }}" placeholder="Search name, roll number or course"><button class="btn btn-primary">Search</button><a class="btn btn-light" href="{{ url_for('students') }}">Reset</a></form>
+<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Name</th><th>Roll No.</th><th>Email</th><th>Course</th><th>Year</th><th>Actions</th></tr></thead><tbody>
+{% for r in rows %}<tr><td><b>{{ r.name }}</b></td><td>{{ r.roll_no }}</td><td>{{ r.email }}</td><td>{{ r.course }}</td><td><span class="year-tag">Year {{ r.year }}</span></td><td class="actions"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('student_edit',sid=r.id) }}"><i class="bi bi-pencil"></i></a><form method="post" action="{{ url_for('student_delete',sid=r.id) }}" onsubmit="return confirm('Delete this student and their linked records?')"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form></td></tr>
+{% else %}<tr><td colspan="6" class="empty">No students found.</td></tr>{% endfor %}
+</tbody></table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | EduTrack{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Dashboard</h1><p>Welcome back, Shankul Rathod! Here's your school overview.</p></div><span class="term-pill"><i class="bi bi-calendar3"></i> This Term</span></div>
+<div class="stats-grid">
+  <div class="stat"><span class="stat-icon blue"><i class="bi bi-people-fill"></i></span><div><small>Total Students</small><h2>{{ students }}</h2><em>Live database count</em></div></div>
+  <div class="stat"><span class="stat-icon green"><i class="bi bi-person-badge-fill"></i></span><div><small>Total Teachers</small><h2>{{ teachers }}</h2><em>Live database count</em></div></div>
+  <div class="stat"><span class="stat-icon cyan"><i class="bi bi-journal-bookmark-fill"></i></span><div><small>Courses</small><h2>{{ courses }}</h2><em>Distinct student courses</em></div></div>
+  <div class="stat"><span class="stat-icon lime"><i class="bi bi-calendar-check-fill"></i></span><div><small>Attendance Today</small><h2>{{ attendance_pct }}%</h2><em>Based on today's marks</em></div></div>
+  <div class="stat"><span class="stat-icon purple"><i class="bi bi-cash-coin"></i></span><div><small>Fees Collected</small><h2>₹{{ "{:,.0f}".format(fee_total) }}</h2><em>Recorded payments</em></div></div>
+</div>
+<div class="dashboard-columns">
+  
+<section class="panel">
+    <div class="panel-head">
+        <div>
+            <h3>Attendance Overview</h3>
+            <p>Based on saved attendance records</p>
+        </div>
+        <span class="tiny-pill">Last 7 Days</span>
+    </div>
+
+    {% if has_weekly_attendance %}
+    <div class="chart-wrap">
+        <canvas id="attendanceChart"
+                data-labels='{{ weekly_labels | tojson | safe }}'
+                data-values='{{ weekly_attendance | tojson | safe }}'></canvas>
+    </div>
+    {% else %}
+    <div class="chart-wrap chart-empty">
+        <div>
+            <i class="bi bi-calendar-check"></i>
+            <strong>No attendance records this week</strong>
+            <span>Mark student attendance to see the weekly overview.</span>
+            <a href="{{ url_for('attendance') }}">Take Attendance</a>
+        </div>
+    </div>
+    {% endif %}
+</section>
+  <section class="panel">
+    <div class="panel-head"><div><h3>Recent Fee Payments</h3><p>Latest recorded transactions</p></div><a href="{{ url_for('fees') }}">View all</a></div>
+    {% for payment in recent_fees %}
+    <div class="activity"><span class="activity-symbol green"><i class="bi bi-wallet2"></i></span><div><b>{{ payment.name }}</b><small>{{ payment.description or payment.roll_no }}</small></div><strong>₹{{ "{:,.0f}".format(payment.amount) }}</strong></div>
+    {% else %}<div class="empty">No fee payments recorded yet.</div>{% endfor %}
+  </section>
+</div>
+<div class="dashboard-columns lower">
+  <section class="panel">
+    <div class="panel-head"><div><h3>Quick Actions</h3><p>Common management tasks</p></div></div>
+    <div class="quick-grid">
+      <a href="{{ url_for('student_add') }}"><span class="quick-icon blue"><i class="bi bi-person-plus"></i></span><b>Add Student</b></a>
+      <a href="{{ url_for('attendance') }}"><span class="quick-icon green"><i class="bi bi-calendar-check"></i></span><b>Take Attendance</b></a>
+      <a href="{{ url_for('teacher_add') }}"><span class="quick-icon purple"><i class="bi bi-person-badge"></i></span><b>Add Teacher</b></a>
+      <a href="{{ url_for('fees') }}"><span class="quick-icon orange"><i class="bi bi-cash-stack"></i></span><b>Collect Fees</b></a>
+      <a href="{{ url_for('reports') }}"><span class="quick-icon cyan"><i class="bi bi-file-earmark-bar-graph"></i></span><b>Generate Report</b></a>
+      <a href="{{ url_for('students') }}"><span class="quick-icon pink"><i class="bi bi-people"></i></span><b>Student List</b></a>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><div><h3>Recently Added Students</h3><p>Latest student registrations</p></div><a href="{{ url_for('students') }}">View all</a></div>
+    {% for student in recent_students %}
+    <div class="activity"><span class="initial">{{ student.name[:1]|upper }}</span><div><b>{{ student.name }}</b><small>{{ student.roll_no }} · {{ student.course }}</small></div><span class="year-tag">Year {{ student.year }}</span></div>
+    {% else %}<div class="empty">No students added yet. Use Add Student to begin.</div>{% endfor %}
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if has_weekly_attendance %}
+<script>
+const attendanceCanvas = document.getElementById('attendanceChart');
+const weeklyLabels = JSON.parse(attendanceCanvas.dataset.labels);
+const weeklyAttendance = JSON.parse(attendanceCanvas.dataset.values);
+
+if (attendanceCanvas && window.Chart) {
+
+    new Chart(attendanceCanvas, {
+        type: 'line',
+
+        data: {
+            labels: weeklyLabels,
+
+            datasets: [{
+                label: 'Attendance',
+                data: weeklyAttendance,
+
+                borderColor: '#2868dc',
+                backgroundColor: 'rgba(40,104,220,0.10)',
+
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2,
+
+                pointRadius: 4,
+                pointBackgroundColor: '#2868dc',
+                spanGaps: false
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+
+                    ticks: {
+                        stepSize: 25,
+                        callback: value => value + '%'
+                    }
+                },
+
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endif %}
+
+{% endblock %}

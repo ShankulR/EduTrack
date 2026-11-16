@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Reports | Educanize{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Reports</h1><p>Summary of school records and collections.</p></div><a class="btn btn-primary" href="{{ url_for('export_students') }}"><i class="bi bi-download"></i> Export Students CSV</a></div>
+<div class="stats-grid report-stats">
+<div class="stat"><span class="stat-icon blue"><i class="bi bi-people"></i></span><div><small>Total Students</small><h2>{{ total_students }}</h2></div></div>
+<div class="stat"><span class="stat-icon green"><i class="bi bi-person-badge"></i></span><div><small>Total Teachers</small><h2>{{ total_teachers }}</h2></div></div>
+<div class="stat"><span class="stat-icon purple"><i class="bi bi-cash"></i></span><div><small>Fees Collected</small><h2>₹{{ "{:,.0f}".format(total_fees) }}</h2></div></div>
+</div>
+<section class="panel"><h3 class="section-title">Students by Course</h3><div class="table-responsive"><table class="table"><thead><tr><th>Course</th><th>Number of students</th></tr></thead><tbody>{% for r in by_course %}<tr><td>{{ r.course }}</td><td>{{ r.total }}</td></tr>{% else %}<tr><td colspan="2" class="empty">No student data available.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

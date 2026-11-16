@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if row else 'Add' }} Student | Educanize{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <h1>{{ 'Edit Student' if row else 'Add Student' }}</h1>
+    <p>Enter the student's academic and contact details.</p>
+  </div>
+  <a class="btn btn-light" href="{{ url_for('students') }}">Back to students</a>
+</div>
+
+<section class="panel form-panel">
+  <form method="post">
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Full name</label>
+        <input class="form-control" name="name"
+               value="{{ row.name if row else '' }}" required>
+      </div>
+
+      <div>
+        <label class="form-label">Roll number</label>
+        <input class="form-control" name="roll_no"
+               value="{{ row.roll_no if row else '' }}" required>
+      </div>
+
+      <div>
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" name="email"
+               value="{{ row.email if row else '' }}" required>
+      </div>
+
+      <div>
+        <label class="form-label">Course / Department</label>
+        {% set courses = [
+          'Computer Engineering',
+          'Information Technology',
+          'Mechanical Engineering',
+          'Civil Engineering',
+          'Electrical Engineering',
+          'Electronics and Telecommunication',
+          'Artificial Intelligence and Data Science',
+          'Artificial Intelligence and Machine Learning',
+          'Computer Science and Engineering',
+          'Other'
+        ] %}
+        <select class="form-select" name="course" required>
+          <option value="">Select a course</option>
+          {% for course in courses %}
+            <option value="{{ course }}"
+              {% if row and row.course == course %}selected{% endif %}>
+              {{ course }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Academic year</label>
+        <select class="form-select" name="year" required>
+          <option value="">Select academic year</option>
+          {% for y in range(1, 5) %}
+            <option value="{{ y }}"
+              {% if row and row.year == y %}selected{% endif %}>
+              {{ y }}{{ 'st' if y == 1 else 'nd' if y == 2 else 'rd' if y == 3 else 'th' }} Year
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save Student</button>
+      <a class="btn btn-light" href="{{ url_for('students') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
